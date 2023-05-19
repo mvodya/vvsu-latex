@@ -1,4 +1,4 @@
-% V 2.0
+% V 3.0
 % Author: Mark Vodyanitskiy (@mvodya) 2023
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -22,6 +22,7 @@
 \RequirePackage[english,russian]{babel}
 \RequirePackage{fontspec}
 \RequirePackage{indentfirst}
+\RequirePackage{hyphenat}
 \setmainfont{Times New Roman}
 \renewcommand{\baselinestretch}{1.5}
 \setlength{\parindent}{1.25cm}
@@ -31,9 +32,6 @@
 \clubpenalty=10000
 \widowpenalty=10000
 %\brokenpenalty=10000
-
-\RequirePackage{tabularx}
-\RequirePackage{forloop}
 
 % Настройка подписей
 \RequirePackage[labelsep=endash]{caption}
@@ -107,6 +105,8 @@
 \renewcommand{\cftbeforesecskip}{-0.3em}
 
 % Функции для записи участников
+\RequirePackage{tabularx}
+\RequirePackage{forloop}
 \newcounter{membercnt}
 \def\member#1#2{\expandafter\def\csname MEM-A-\themembercnt\endcsname{#1}%
 \expandafter\def\csname MEM-B-\themembercnt\endcsname{#2}\stepcounter{membercnt}}
@@ -181,6 +181,44 @@
   {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Заключение\vspace{8pt}\\}
   }{
   \clearpage
+}
+
+% Настройки для библиографии (списка источников)
+\usepackage{biblatex}
+\DeclareFieldFormat{title}{#1}
+\DeclareBibliographyDriver{online}{
+  \printfield{title} [Электронный ресурс]
+  // \printnames{author}
+  - \nohyphens{Режим доступа:} \printfield{howpublished}
+  \nohyphens{\printfield{note}}
+  \finentry
+}
+\DeclareFieldFormat{labelnumberwidth}{#1\adddot}
+\defbibenvironment{bibliography}
+{\list
+{\printfield[labelnumberwidth]{labelnumber}}
+{\setlength{\labelwidth}{\labelnumberwidth}
+\setlength{\leftmargin}{0cm}
+\setlength{\labelsep}{0cm}
+\setlength{\itemindent}{\dimexpr\labelwidth+\parindent-\labelsep}
+\addtolength{\leftmargin}{\labelsep}
+\setlength{\itemsep}{0cm}
+\setlength{\topsep}{0cm}
+\setlength{\parsep}{0cm}}
+\renewcommand*{\makelabel}[1]{\hss##1}}
+{\endlist}
+{\item}
+\setcounter{biburlnumpenalty}{100}
+% \setcounter{biburlucpenalty}{100}
+% \setcounter{biburllcpenalty}{100}
+\renewcommand*{\finentrypunct}{}
+
+% СПИСОК ИСТОЧНИКОВ
+\newcommand{\references} {
+  \clearpage
+  \addcontentsline{toc}{section}{Список использованных источников}
+  {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Список использованных источников\vspace{8pt}\\}
+  \printbibliography[heading=none]
 }
 
 % ГЛАВА
