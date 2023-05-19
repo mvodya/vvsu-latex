@@ -1,4 +1,4 @@
-% V 3.0
+% V 3.1
 % Author: Mark Vodyanitskiy (@mvodya) 2023
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -184,7 +184,7 @@
 }
 
 % Настройки для библиографии (списка источников)
-\usepackage{biblatex}
+\usepackage[sorting=none]{biblatex}
 \DeclareFieldFormat{title}{#1}
 \DeclareBibliographyDriver{online}{
   \printfield{title} [Электронный ресурс]
