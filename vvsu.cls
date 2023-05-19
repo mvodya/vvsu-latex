@@ -1,3 +1,4 @@
+% V 2.0
 % Author: Mark Vodyanitskiy (@mvodya) 2023
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -113,6 +114,9 @@
 \def\getmemberB#1{\csname MEM-B-#1\endcsname}
 \newcounter{memberq}
 
+% Год
+\newcommand{\vvsuyear}{2020}
+
 % ТИТУЛЬНЫЙ ЛИСТ
 \renewcommand{\maketitle}{%
   % Заголовок
@@ -134,7 +138,7 @@
   }
   \vfill
    % Футер
-  {\centering Владивосток 2020 \\}%
+  {\centering Владивосток \vvsuyear \\}%
   \thispagestyle{empty}%
   \clearpage
 }
