@@ -1,4 +1,4 @@
-% V 3.1
+% V 3.2
 % Author: Mark Vodyanitskiy (@mvodya) 2023
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -156,14 +156,12 @@
 }
 
 % СОДЕРЖАНИЕ
-% Не идет в подсчет страниц
 \newcommand{\toc} {
   \pagestyle{empty}
   \setcounter{pageskipcnt}{\value{page}}
   {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Содержание\vspace{8pt}\\}
   \@starttoc{toc}%
   \clearpage
-  \setcounter{page}{\value{pageskipcnt}}
   \pagestyle{fancy}
 }
 
