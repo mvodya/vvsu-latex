@@ -1,5 +1,5 @@
-% V 3.2
-% Author: Mark Vodyanitskiy (@mvodya) 2023
+% V 4.1
+% Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
 % квалификационных работ, курсовых работ (проектов), рефератов,
@@ -16,13 +16,14 @@
 \RequirePackage{xparse}
 \RequirePackage{float}
 \RequirePackage{hyperref}
+\RequirePackage{color}
 
 % Общие настройки
 \RequirePackage[left=3cm,right=1cm,top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
 \RequirePackage[english,russian]{babel}
 \RequirePackage{fontspec}
 \RequirePackage{indentfirst}
-\RequirePackage{hyphenat}
+\RequirePackage{hyphenat} % Автоматические переносы слов (СТО 4.1.5)
 \setmainfont{Times New Roman}
 \renewcommand{\baselinestretch}{1.5}
 \setlength{\parindent}{1.25cm}
@@ -38,9 +39,8 @@
 
 % Настройки списков
 \RequirePackage{enumitem}
-% \setlist[enumerate]{label=\theenumi), leftmargin=0cm, labelwidth=*, itemindent=\dimexpr\labelwidth+\parindent-\labelsep, itemsep=0cm, topsep=0cm, parsep=0cm}
 \newenvironment{vvsu_list}{
-  \begin{enumerate}[label=\theenumi), leftmargin=0cm, labelwidth=*, itemindent=\dimexpr\labelwidth+\parindent-\labelsep, itemsep=0cm, topsep=0cm, parsep=0cm]
+  \begin{enumerate}[label=\theenumi), itemsep=0cm, topsep=0cm, parsep=0cm, wide=\parindent]
 }{
   \end{enumerate}
 }
@@ -57,12 +57,16 @@
 % Настройки картинок
 \NewDocumentEnvironment{vvsu_figure}{ m O{H} m }{
   \begin{figure}[#2]
+  \vspace{6pt} % Добавляем отступ 6pt перед рисунком (СТО: п.5.3.7)
   \captionsetup{position=bottom, skip=0cm, justification=centering, parskip=0cm, name=Рисунок}
   \centering
-}{
+  \centering
+  }{
+  \begin{minipage}{0.95\linewidth} % Ограничиваем максимальную ширину (фикс бага отступами для подписей)
   \caption{#1}
   \label{#3}
-  % \vspace{-12pt}
+  \end{minipage}
+  \vspace{-6pt}
   \end{figure}
 }
 
@@ -87,21 +91,35 @@
 \newcounter{pageskipcnt}
 
 % Настройка содержания
+% СТО: Приложение Г
 \RequirePackage{tocloft}
 \renewcommand{\cftdotsep}{1}
 \renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
-\renewcommand\cftpartafterpnum{}
-\renewcommand\cftsecafterpnum{}
-\renewcommand\cftsubsecafterpnum{}
+\renewcommand{\cftpartafterpnum}{}
+\renewcommand{\cftsecafterpnum}{}
+\renewcommand{\cftpartafterpnum}{}
+\renewcommand{\cftsubsecafterpnum}{}
 \renewcommand{\cftpartfont}{}
 \renewcommand{\cftsecfont}{}
 \renewcommand{\cftsubsecfont}{}
+\renewcommand{\cftsubsubsecfont}{}
 \renewcommand{\cftpartpagefont}{}
 \renewcommand{\cftsecpagefont}{}
 \renewcommand{\cftsubsecpagefont}{}
-\renewcommand\cftsecnumwidth{0.5cm}
-\renewcommand\cftsubsecnumwidth{0.8cm}
+\renewcommand{\cftsubsubsecpagefont}{}
+% Отступ для Введение, Заключение и т.п.
+\renewcommand{\cftpartindent}{0.5cm}
+% Отступы для уровней списка
+\renewcommand{\cftsecindent}{0cm}
+\renewcommand{\cftsubsecindent}{0.5cm}
+\renewcommand{\cftsubsubsecindent}{1.3cm}
+% Отступы для цифр
+\renewcommand{\cftsecnumwidth}{0.5cm}
+\renewcommand{\cftsubsecnumwidth}{0.8cm}
+\renewcommand{\cftsubsubsecnumwidth}{1.1cm}
+% Фикс пробелов между главами
+\renewcommand{\cftbeforepartskip}{-0.3em}
 \renewcommand{\cftbeforesecskip}{-0.3em}
 
 % Функции для записи участников
@@ -115,7 +133,7 @@
 \newcounter{memberq}
 
 % Год
-\newcommand{\vvsuyear}{2020}
+\newcommand{\vvsuyear}{2024}
 
 % ТИТУЛЬНЫЙ ЛИСТ
 \renewcommand{\maketitle}{%
@@ -167,7 +185,7 @@
 
 % ВВЕДЕНИЕ
 \newenvironment{introduction} {
-  \addcontentsline{toc}{section}{Введение}
+  \addcontentsline{toc}{part}{Введение}
   {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Введение\vspace{8pt}\\}
   }{
   \clearpage
@@ -175,7 +193,7 @@
 
 % ЗАКЛЮЧЕНИЕ
 \newenvironment{conclusion} {
-  \addcontentsline{toc}{section}{Заключение}
+  \addcontentsline{toc}{part}{Заключение}
   {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Заключение\vspace{8pt}\\}
   }{
   \clearpage
@@ -191,7 +209,7 @@
   \nohyphens{\printfield{note}}
   \finentry
 }
-\DeclareFieldFormat{labelnumberwidth}{#1\adddot}
+\DeclareFieldFormat{labelnumberwidth}{#1} % было #1\adddot, но по СТО: п.4.9.2
 \defbibenvironment{bibliography}
 {\list
 {\printfield[labelnumberwidth]{labelnumber}}
@@ -214,7 +232,7 @@
 % СПИСОК ИСТОЧНИКОВ
 \newcommand{\references} {
   \clearpage
-  \addcontentsline{toc}{section}{Список использованных источников}
+  \addcontentsline{toc}{part}{Список использованных источников}
   {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Список использованных источников\vspace{8pt}\\}
   \printbibliography[heading=none]
 }
@@ -222,15 +240,28 @@
 % ГЛАВА
 \renewcommand\section{
   \@startsection {section}{1}{\parindent}%
+  {0pt}%
   {12pt}%
-  {14pt}%
   {\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont}
 }
 
 % ПОДГЛАВА
 \renewcommand\subsection{
   \@startsection {subsection}{2}{\parindent}%
-  {20pt}%
-  {8pt}%
-  {\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont}
+  {12pt}%
+  % Если в названии много строк - отступ 9пт, если одна строка - отсуп 6пт (СТО: п.4.5.6)
+  % про 6пт - СТО: 4.7.12
+  {\ifdim\dimexpr\fontcharht\font`\A * \numexpr \prevgraf + 1 \relax > \dimexpr 1\baselineskip
+  9pt\else 6pt\fi}%
+  {\fontsize{13}{13}\linespread{1}\setmainfont{Arial}\selectfont}
+}
+
+% ПОДПОДГЛАВА
+\renewcommand{\subsubsection}[1]{
+  \@startsection {subsubsection}{3}{\parindent}%
+  {0pt}%
+  {0pt}%
+  {\fontsize{12}{12}\linespread{1}\setmainfont{Times New Roman}\selectfont\bfseries}
+  {#1}%
+  {\noindent}%
 }
