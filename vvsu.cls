@@ -1,4 +1,4 @@
-% V 4.1
+% V 4.2
 % Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -17,6 +17,8 @@
 \RequirePackage{float}
 \RequirePackage{hyperref}
 \RequirePackage{color}
+\RequirePackage{xassoccnt}
+\RequirePackage{xstring}
 
 % Общие настройки
 \RequirePackage[left=3cm,right=1cm,top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
@@ -46,15 +48,62 @@
 }
 
 % Настройки таблиц
+\NewTotalDocumentCounter{cnttotaltables}
 \newenvironment{vvsu_table}[2][H]{
   \begin{table}[#1]
   \captionsetup{singlelinecheck=off, position=top, skip=0cm}
-  \caption{#2}
+  \addtocounter{cnttotaltables}{1}\caption{#2}
 }{
   \end{table}
 }
+% Вывод общего количества таблиц
+\newcommand{\totaltables}{\TotalValue{cnttotaltables}}
+% Макрос для плюризации слова "таблица"
+\newcommand{\declinetable}[1]{%
+  \StrRight{#1}{2}[\lastTwoDigits]%
+  \StrRight{#1}{1}[\lastDigit]%
+  \IfInteger{\lastTwoDigits}{%
+    \ifthenelse{\(\lastTwoDigits > 10\) \AND \(\lastTwoDigits < 20\)}{%
+      #1~таблиц%
+    }{%
+      \IfStrEq{\lastDigit}{1}{%
+        #1~таблица%
+      }{%
+        \IfStrEq{\lastDigit}{2}{%
+          #1~таблицы%
+        }{%
+          \IfStrEq{\lastDigit}{3}{%
+            #1~таблицы%
+          }{%
+            \IfStrEq{\lastDigit}{4}{%
+              #1~таблицы%
+            }{%
+              #1~таблиц%
+            }%
+          }%
+        }%
+      }%
+    }%
+  }{#1~таблиц}%
+}
+% Вывод общего количества таблиц с плюризацией
+\newcommand{\printtotaltables}{\declinetable{\TotalValue{cnttotaltables}}}
+% Макрос для плюризации слова "table"
+\newcommand{\declinetableeng}[1]{%
+  \StrRight{#1}{1}[\lastDigit]%
+  \IfInteger{#1}{%
+    \ifthenelse{#1 = 1}{%
+      #1~table%
+    }{%
+      #1~tables%
+    }%
+  }{#1~tables}%
+}
+% Вывод общего количества таблиц с плюризацией на английском
+\newcommand{\printtotaltableseng}{\declinetableeng{\TotalValue{cnttotaltables}}}
 
 % Настройки картинок
+\NewTotalDocumentCounter{cnttotalfigures}
 \NewDocumentEnvironment{vvsu_figure}{ m O{H} m }{
   \begin{figure}[#2]
   \vspace{6pt} % Добавляем отступ 6pt перед рисунком (СТО: п.5.3.7)
@@ -63,16 +112,59 @@
   \centering
   }{
   \begin{minipage}{0.95\linewidth} % Ограничиваем максимальную ширину (фикс бага отступами для подписей)
-  \caption{#1}
+  \addtocounter{cnttotalfigures}{1}\caption{#1}
   \label{#3}
   \end{minipage}
   \vspace{-6pt}
   \end{figure}
 }
+% Вывод общего количества изображений
+\newcommand{\totalfigures}{\TotalValue{cnttotalfigures}}
+% Макрос для плюризации слова "изображений"
+\newcommand{\declinefigure}[1]{%
+  \StrRight{#1}{2}[\lastTwoDigits]%
+  \StrRight{#1}{1}[\lastDigit]%
+  \IfInteger{\lastTwoDigits}{%
+    \ifthenelse{\(\lastTwoDigits > 10\) \AND \(\lastTwoDigits < 20\)}{%
+      #1~изображений%
+    }{%
+      \IfStrEq{\lastDigit}{1}{%
+        #1~изображение%
+      }{%
+        \IfStrEq{\lastDigit}{2}{%
+          #1~изображения%
+        }{%
+          \IfStrEq{\lastDigit}{3}{%
+            #1~изображения%
+          }{%
+            \IfStrEq{\lastDigit}{4}{%
+              #1~изображения%
+            }{%
+              #1~изображений%
+            }%
+          }%
+        }%
+      }%
+    }%
+  }{#1~изображений}%
+}
+% Вывод общего количества изображений с плюризацией
+\newcommand{\printtotalfigures}{\declinefigure{\TotalValue{cnttotalfigures}}}
+% Макрос для плюризации слова "image"
+\newcommand{\declineimageeng}[1]{%
+  \ifthenelse{#1 = 1}{%
+    #1~image%
+  }{%
+    #1~images%
+  }%
+}
+% Вывод общего количества изображений с плюризацией на английском
+\newcommand{\printtotalfigureseng}{\declineimageeng{\TotalValue{cnttotalfigures}}}
 
 
 % Настройки нумерации страниц
 \usepackage{fancyhdr}
+\NewTotalDocumentCounter{reallastpagenumber}
 \pagestyle{fancy}
 \fancyhf{}
 \fancyheadoffset{0cm}
@@ -80,11 +172,54 @@
 \renewcommand{\footrulewidth}{0pt}
 \topmargin=-1.29cm % 1.25cm - 2.54cm (1in)
 \headsep=12pt
-\fancyhead[R]{\thepage}
+\fancyhead[R]{\setcounter{reallastpagenumber}{\numexpr\thepage+1\relax}
+\thepage}
 \fancypagestyle{plain}{%
    \fancyhf{}%
    \fancyhead[R]{\thepage}%
 }
+% Вывод общего количества страниц
+\newcommand{\totalpages}{\TotalValue{reallastpagenumber}}
+% Макрос для плюризации слова "страница"
+\newcommand{\declinepage}[1]{%
+  \StrRight{#1}{2}[\lastTwoDigits]%
+  \StrRight{#1}{1}[\lastDigit]%
+  \IfInteger{\lastTwoDigits}{%
+    \ifthenelse{\(\lastTwoDigits > 10\) \AND \(\lastTwoDigits < 20\)}{%
+      #1~страниц%
+    }{%
+      \IfStrEq{\lastDigit}{1}{%
+        #1~страница%
+      }{%
+        \IfStrEq{\lastDigit}{2}{%
+          #1~страницы%
+        }{%
+          \IfStrEq{\lastDigit}{3}{%
+            #1~страницы%
+          }{%
+            \IfStrEq{\lastDigit}{4}{%
+              #1~страницы%
+            }{%
+              #1~страниц%
+            }%
+          }%
+        }%
+      }%
+    }%
+  }{#1~страниц}%
+}
+% Вывод общего количества страниц с плюризацией
+\newcommand{\printtotalpages}{\declinepage{\TotalValue{reallastpagenumber}}}
+% Макрос для плюризации слова "page"
+\newcommand{\declinepageeng}[1]{%
+  \ifthenelse{#1 = 1}{%
+    #1~page%
+  }{%
+    #1~pages%
+  }%
+}
+% Вывод общего количества страниц с плюризацией на английском
+\newcommand{\printtotalpageseng}{\declinepageeng{\TotalValue{reallastpagenumber}}}
 
 % Счетчик для пропуска страниц
 % используется для сохранения страницы с последующим декрементом
@@ -201,8 +336,10 @@
 
 % Настройки для библиографии (списка источников)
 \usepackage[sorting=none]{biblatex}
+\NewTotalDocumentCounter{cnttotalreferences}
 \DeclareFieldFormat{title}{#1}
 \DeclareBibliographyDriver{online}{
+  \addtocounter{cnttotalreferences}{1}
   \printfield{title} [Электронный ресурс]
   // \printnames{author}
   - \nohyphens{Режим доступа:} \printfield{howpublished}
@@ -228,6 +365,49 @@
 % \setcounter{biburlucpenalty}{100}
 % \setcounter{biburllcpenalty}{100}
 \renewcommand*{\finentrypunct}{}
+% Вывод общего количества источников
+\newcommand{\totalreferences}{\TotalValue{cnttotalreferences}}
+% Макрос для плюризации слова "источник"
+\newcommand{\declinereference}[1]{%
+  \StrRight{#1}{2}[\lastTwoDigits]%
+  \StrRight{#1}{1}[\lastDigit]%
+  \IfInteger{\lastTwoDigits}{%
+    \ifthenelse{\(\lastTwoDigits > 10\) \AND \(\lastTwoDigits < 20\)}{%
+      #1~источников%
+    }{%
+      \IfStrEq{\lastDigit}{1}{%
+        #1~источник%
+      }{%
+        \IfStrEq{\lastDigit}{2}{%
+          #1~источника%
+        }{%
+          \IfStrEq{\lastDigit}{3}{%
+            #1~источника%
+          }{%
+            \IfStrEq{\lastDigit}{4}{%
+              #1~источника%
+            }{%
+              #1~источников%
+            }%
+          }%
+        }%
+      }%
+    }%
+  }{#1~источников}%
+}
+% Вывод общего количества источников с плюризацией
+\newcommand{\printtotalreferences}{\declinereference{\TotalValue{cnttotalreferences}}}
+% Макрос для плюризации слова "reference"
+\newcommand{\declinereferenceeng}[1]{%
+  \ifthenelse{#1 = 1}{%
+    #1~reference%
+  }{%
+    #1~references%
+  }%
+}
+% Вывод общего количества источников с плюризацией на английском
+\newcommand{\printtotalreferenceseng}{\declinereferenceeng{\TotalValue{cnttotalreferences}}}
+
 
 % СПИСОК ИСТОЧНИКОВ
 \newcommand{\references} {
