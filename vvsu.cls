@@ -1,4 +1,4 @@
-% V 4.2
+% V 5.0
 % Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -19,6 +19,7 @@
 \RequirePackage{color}
 \RequirePackage{xassoccnt}
 \RequirePackage{xstring}
+\RequirePackage{varwidth}
 
 % Общие настройки
 \RequirePackage[left=3cm,right=1cm,top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
@@ -163,7 +164,7 @@
 
 
 % Настройки нумерации страниц
-\usepackage{fancyhdr}
+\RequirePackage{fancyhdr}
 \NewTotalDocumentCounter{reallastpagenumber}
 \pagestyle{fancy}
 \fancyhf{}
@@ -268,32 +269,71 @@
 \newcounter{memberq}
 
 % Год
-\newcommand{\vvsuyear}{2024}
+\newcommand{\vvsuyear}[1]{\gdef\@vvsuyear{#1}}
+\newcommand{\@vvsuyear}{2024}
+
+% Подзаголовок
+\renewcommand{\subtitle}[1]{\gdef\@subtitle{#1}}
+
+% Шапка
+\newcommand{\vvsuhead}[1]{\gdef\@vvsuhead{#1}}
+\newcommand{\@vvsuhead}{МИНОБРНАУКИ РОССИИ\\
+ВЛАДИВОСТОКСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ\\
+ИНСТИТУТ ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ\\
+КАФЕДРА ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ И СИСТЕМ}
+
+
+% Рекомендация
+\newcommand{\featurerecomentation}{0}
+\newcommand{\vvsurecommendation}[2]{\renewcommand{\featurerecomentation}{1}\gdef\@recomrole{#1}\gdef\@recomname{#2}}
+
+% Код работы
+\newcommand{\featurecode}{0}
+\newcommand{\vvsucode}[1]{\renewcommand{\featurecode}{1}\gdef\@vvsucode{#1}}
 
 % ТИТУЛЬНЫЙ ЛИСТ
 \renewcommand{\maketitle}{%
+  % Шапка
+  {\centering\@vvsuhead\\}%
+  % Блок для рекомендации
+  \ifnum\featurerecomentation=1\relax%
+  {\vspace{8pt}%
+  \begin{flushright}%
+    \begin{varwidth}{.4\textwidth}%
+      \centering\fontsize{12}{12}\selectfont
+      \uppercase{Рекомендовано}\\
+      к защите\\
+      \ifx\@recomrole\@empty\else%
+      \@recomrole\\
+      \fi%
+      \hrulefill{} \@recomname
+    \end{varwidth}%
+  \end{flushright}}%
+  \fi%
+  \vfill%
   % Заголовок
-  {\centering МИНОБРНАУКИ РОССИИ\\
-  ВЛАДИВОСТОКСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ\\
-  ИНСТИТУТ ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ\\
-  КАФЕДРА ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ И СИСТЕМ\\}%
-  \vfill
-  % Название
   {\centering\fontsize{24}{24}\linespread{1}\selectfont\MakeUppercase{\@title}\\}%
-  \vfill
+  % Текст под названием (например название работы)
+  \ifx\@subtitle\@empty\else%
+    {\vspace{14pt}\centering\fontsize{22}{22}\linespread{1}\selectfont{\@subtitle}\\}%
+  \fi%
+  % Код работы
+  \ifnum\featurecode=1%
+    {\vspace{4pt}\centering\fontsize{22}{22}\linespread{1}\selectfont{\@vvsucode}\\}%
+  \fi%
+  \vfill%
   % Участники
   {\linespread{1}\selectfont
-  \begin{tabularx}{\textwidth}{lXX}%
+  \noindent\begin{tabularx}{\textwidth}{lXl}%
   \forloop{memberq}{0}{\value{memberq} < \themembercnt}{%
     \noindent\getmemberA{\thememberq} & \hrulefill & \getmemberB{\thememberq}\vspace{5pt}\\
   }
-  \end{tabularx}%
-  }
-  \vfill
+  \end{tabularx}}%
+  \vfill%
    % Футер
-  {\centering Владивосток \vvsuyear \\}%
+  {\centering Владивосток \@vvsuyear \\}%
   \thispagestyle{empty}%
-  \clearpage
+  \clearpage%
 }
 
 % Дополнительная страница до содержания (нап. Задание)
@@ -335,7 +375,7 @@
 }
 
 % Настройки для библиографии (списка источников)
-\usepackage[sorting=none]{biblatex}
+\RequirePackage[sorting=none]{biblatex}
 \NewTotalDocumentCounter{cnttotalreferences}
 \DeclareFieldFormat{title}{#1}
 \DeclareBibliographyDriver{online}{
