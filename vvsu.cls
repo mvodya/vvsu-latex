@@ -1,4 +1,4 @@
-% V 5.2
+% V 5.3
 % Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -361,12 +361,9 @@
 
 % СОДЕРЖАНИЕ
 \newcommand{\toc} {
-  \pagestyle{empty}
-  \setcounter{pageskipcnt}{\value{page}}
   {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Содержание\vspace{8pt}\\}
   \@starttoc{toc}%
   \clearpage
-  \pagestyle{fancy}
 }
 
 % ВВЕДЕНИЕ
