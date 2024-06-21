@@ -1,4 +1,4 @@
-% V 5.0
+% V 5.2
 % Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -6,7 +6,7 @@
 % контрольных работ, отчетов по практикам, лабораторных работ
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{vvsu}[2023/05/17 VVSU CTO 04-1-005-2015]
+\ProvidesClass{vvsu}[2024/06/21 VVSU CTO 04-1-005-2015]
 
 % Base class
 \LoadClass[a4paper,12pt,oneside]{scrartcl}
@@ -16,7 +16,6 @@
 \RequirePackage{xparse}
 \RequirePackage{float}
 \RequirePackage{hyperref}
-\RequirePackage{color}
 \RequirePackage{xassoccnt}
 \RequirePackage{xstring}
 \RequirePackage{varwidth}
@@ -251,12 +250,24 @@
 \renewcommand{\cftsubsecindent}{0.5cm}
 \renewcommand{\cftsubsubsecindent}{1.3cm}
 % Отступы для цифр
+\renewcommand{\cftpartnumwidth}{0cm}
 \renewcommand{\cftsecnumwidth}{0.5cm}
 \renewcommand{\cftsubsecnumwidth}{0.8cm}
 \renewcommand{\cftsubsubsecnumwidth}{1.1cm}
 % Фикс пробелов между главами
-\renewcommand{\cftbeforepartskip}{-0.3em}
-\renewcommand{\cftbeforesecskip}{-0.3em}
+\renewcommand{\cftbeforepartskip}{0.5em}
+\renewcommand{\cftbeforesecskip}{0.5em}
+\renewcommand{\cftbeforesubsecskip}{0.5em}
+\renewcommand{\cftbeforesubsubsecskip}{0.5em}
+% Управление межстрочным интервалом
+\pretocmd{\l@part}{\linespread{1}\selectfont}{}{\error}
+\apptocmd{\l@part}{\linespread{1.5}\selectfont}{}{\error}
+\pretocmd{\l@section}{\linespread{1}\selectfont}{}{\error}
+\apptocmd{\l@section}{\linespread{1.5}\selectfont}{}{\error}
+\pretocmd{\l@subsection}{\linespread{1}\selectfont}{}{\error}
+\apptocmd{\l@subsection}{\linespread{1.5}\selectfont}{}{\error}
+\pretocmd{\l@subsubsection}{\linespread{1}\selectfont}{}{\error}
+\apptocmd{\l@subsubsection}{\linespread{1.5}\selectfont}{}{\error}
 
 % Функции для записи участников
 \RequirePackage{tabularx}
