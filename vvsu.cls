@@ -1,4 +1,4 @@
-% V 5.3
+% V 5.8
 % Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -35,6 +35,8 @@
 \clubpenalty=10000
 \widowpenalty=10000
 %\brokenpenalty=10000
+\RequirePackage{url}
+\urlstyle{same} % Фикс шрифта для URL
 
 % Настройка подписей
 \RequirePackage[labelsep=endash]{caption}
@@ -293,7 +295,6 @@
 ИНСТИТУТ ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ\\
 КАФЕДРА ИНФОРМАЦИОННЫХ ТЕХНОЛОГИЙ И СИСТЕМ}
 
-
 % Рекомендация
 \newcommand{\featurerecomentation}{0}
 \newcommand{\vvsurecommendation}[2]{\renewcommand{\featurerecomentation}{1}\gdef\@recomrole{#1}\gdef\@recomname{#2}}
@@ -305,10 +306,10 @@
 % ТИТУЛЬНЫЙ ЛИСТ
 \renewcommand{\maketitle}{%
   % Шапка
-  {\centering\@vvsuhead\\}%
+  {\centering\fontsize{14}{14}\linespread{1.5}\selectfont\@vvsuhead\\}%
   % Блок для рекомендации
   \ifnum\featurerecomentation=1\relax%
-  {\vspace{8pt}%
+  {\vfill%
   \begin{flushright}%
     \begin{varwidth}{.4\textwidth}%
       \centering\fontsize{12}{12}\selectfont
@@ -359,6 +360,17 @@
   \pagestyle{fancy}
 }
 
+% Дополнительная страница до содержания БЕЗ ЗАГОЛОВКОВ (свое оформление)
+% Не идет в подсчет страниц
+\newenvironment{empty_addition} {
+  \pagestyle{empty}
+  \setcounter{pageskipcnt}{\value{page}}
+  }{
+  \clearpage
+  \setcounter{page}{\value{pageskipcnt}}
+  \pagestyle{fancy}
+}
+
 % СОДЕРЖАНИЕ
 \newcommand{\toc} {
   {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Содержание\vspace{8pt}\\}
@@ -390,7 +402,14 @@
   \addtocounter{cnttotalreferences}{1}
   \printfield{title} [Электронный ресурс]
   // \printnames{author}
-  - \nohyphens{Режим доступа:} \printfield{howpublished}
+  − \nohyphens{Режим доступа:} \printfield{howpublished}
+  \nohyphens{\printfield{note}}
+  \finentry
+}
+\DeclareBibliographyDriver{misc}{
+  \addtocounter{cnttotalreferences}{1}
+  \printfield{title}; \printfield[noformat]{eprint} (\printfield{year}) [Статья]
+  // \printnames{author}
   \nohyphens{\printfield{note}}
   \finentry
 }
@@ -466,30 +485,32 @@
 }
 
 % ГЛАВА
-\renewcommand\section{
+\renewcommand\section{%
   \@startsection {section}{1}{\parindent}%
   {0pt}%
   {12pt}%
-  {\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont}
+  {\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont}%
 }
 
 % ПОДГЛАВА
-\renewcommand\subsection{
+\renewcommand\subsection[1]{%
   \@startsection {subsection}{2}{\parindent}%
   {12pt}%
-  % Если в названии много строк - отступ 9пт, если одна строка - отсуп 6пт (СТО: п.4.5.6)
+  {0pt}%
+  {\fontsize{13}{13}\linespread{1}\setmainfont{Arial}\selectfont}%
+  {#1}%
+  {\noindent}%
+  % Если в названии много строк - отступ 9пт, если одна строка - отступ 6пт (СТО: п.4.5.6)
   % про 6пт - СТО: 4.7.12
-  {\ifdim\dimexpr\fontcharht\font`\A * \numexpr \prevgraf + 1 \relax > \dimexpr 1\baselineskip
-  9pt\else 6pt\fi}%
-  {\fontsize{13}{13}\linespread{1}\setmainfont{Arial}\selectfont}
+  \vspace{\ifdim\dimexpr\fontcharht\font`\A * \numexpr \prevgraf + 1 \relax > \dimexpr 1\baselineskip 9pt\else 6pt\fi}%
 }
 
 % ПОДПОДГЛАВА
-\renewcommand{\subsubsection}[1]{
+\renewcommand{\subsubsection}[1]{%
   \@startsection {subsubsection}{3}{\parindent}%
   {0pt}%
   {0pt}%
-  {\fontsize{12}{12}\linespread{1}\setmainfont{Times New Roman}\selectfont\bfseries}
+  {\fontsize{12}{12}\linespread{1}\setmainfont{Times New Roman}\selectfont\bfseries}%
   {#1}%
   {\noindent}%
 }
