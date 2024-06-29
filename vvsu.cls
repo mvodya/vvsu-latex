@@ -17,6 +17,7 @@
 \RequirePackage{float}
 \RequirePackage{hyperref}
 \RequirePackage{hyperxmp}
+\RequirePackage{pdfpages}
 \RequirePackage{xassoccnt}
 \RequirePackage{xstring}
 \RequirePackage{varwidth}
@@ -426,6 +427,15 @@ pdfauthor={\@author}
   \refstepcounter{part}%
   \addcontentsline{toc}{part}{#1}%
   }{%
+  \clearpage%
+}
+
+% Включение PDF с нумерацией и указанием в оглавлении
+\newcommand{\appendFormatPdf}[3] {%
+  \clearpage%
+  \refstepcounter{part}%
+  \addcontentsline{toc}{part}{#1}%
+  \includepdf[#3,pagecommand={\thispagestyle{fancy}}]{#2}%
   \clearpage%
 }
 
