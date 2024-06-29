@@ -1,4 +1,4 @@
-% V 5.10
+% V 5.11
 % Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -16,6 +16,7 @@
 \RequirePackage{xparse}
 \RequirePackage{float}
 \RequirePackage{hyperref}
+\RequirePackage{hyperxmp}
 \RequirePackage{xassoccnt}
 \RequirePackage{xstring}
 \RequirePackage{varwidth}
@@ -37,6 +38,16 @@
 %\brokenpenalty=10000
 \RequirePackage{url}
 \urlstyle{same} % Фикс шрифта для URL
+
+% PDF Metadata
+\hypersetup{%
+pdftitle={\@title},
+pdflang={ru−RU},
+pdfpublisher={Владивостокский Государственный Университет},
+pdfproducer={LaTeX VVSU V5.11},
+pdfcreator={LaTeX VVSU V5.11},
+pdfauthor={\@author}
+}
 
 % Настройка подписей
 \RequirePackage[labelsep=endash]{caption}
@@ -382,19 +393,21 @@
 }
 
 % ВВЕДЕНИЕ
-\newenvironment{introduction} {
-  \addcontentsline{toc}{part}{Введение}
-  {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Введение\vspace{8pt}\\}
-  }{
-  \clearpage
+\newenvironment{introduction} {%
+  \refstepcounter{part}%
+  \addcontentsline{toc}{part}{Введение}%
+  {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Введение\vspace{8pt}\\}%
+  }{%
+  \clearpage%
 }
 
 % ЗАКЛЮЧЕНИЕ
-\newenvironment{conclusion} {
-  \addcontentsline{toc}{part}{Заключение}
-  {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Заключение\vspace{8pt}\\}
-  }{
-  \clearpage
+\newenvironment{conclusion} {%
+  \refstepcounter{part}%
+  \addcontentsline{toc}{part}{Заключение}%
+  {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Заключение\vspace{8pt}\\}%
+  }{%
+  \clearpage%
 }
 
 % Дополнительная страница (например ПРИЛОЖЕНИЕ) после списка источников
@@ -499,11 +512,12 @@
 
 
 % СПИСОК ИСТОЧНИКОВ
-\newcommand{\references} {
-  \clearpage
-  \addcontentsline{toc}{part}{Список использованных источников}
-  {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Список использованных источников\vspace{8pt}\\}
-  \printbibliography[heading=none]
+\newcommand{\references} {%
+  \clearpage%
+  \refstepcounter{part}%
+  \addcontentsline{toc}{part}{Список использованных источников}%
+  {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Список использованных источников\vspace{8pt}\\}%
+  \printbibliography[heading=none]%
 }
 
 % ГЛАВА
