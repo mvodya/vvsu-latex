@@ -1,4 +1,4 @@
-% V 5.9
+% V 5.10
 % Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -395,6 +395,25 @@
   {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont Заключение\vspace{8pt}\\}
   }{
   \clearpage
+}
+
+% Дополнительная страница (например ПРИЛОЖЕНИЕ) после списка источников
+\newenvironment{application}[2] {%
+  \clearpage%
+  \refstepcounter{part}%
+  \addcontentsline{toc}{part}{#1}%
+  {\centering\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont #2\vspace{8pt}\\}%
+  }{%
+  \clearpage%
+}
+
+% Дополнительная страница без заголовка после списка источников
+\newenvironment{empty_application}[1] {%
+  \clearpage%
+  \refstepcounter{part}%
+  \addcontentsline{toc}{part}{#1}%
+  }{%
+  \clearpage%
 }
 
 % Настройки для библиографии (списка источников)
