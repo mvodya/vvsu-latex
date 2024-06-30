@@ -1,4 +1,4 @@
-% V 5.11
+% V 5.13
 % Author: Mark Vodyanitskiy (@mvodya) 2024
 % СК-СТО-ТР-04-1.005-2015
 % Основано на требовании к оформлению текстовой части выпускных
@@ -21,6 +21,7 @@
 \RequirePackage{xassoccnt}
 \RequirePackage{xstring}
 \RequirePackage{varwidth}
+\RequirePackage{calc}
 
 % Общие настройки
 \RequirePackage[left=3cm,right=1cm,top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
@@ -45,8 +46,8 @@
 pdftitle={\@title},
 pdflang={ru−RU},
 pdfpublisher={Владивостокский Государственный Университет},
-pdfproducer={LaTeX VVSU V5.11},
-pdfcreator={LaTeX VVSU V5.11},
+pdfproducer={LaTeX VVSU V5.13},
+pdfcreator={LaTeX VVSU V5.13},
 pdfauthor={\@author}
 }
 
@@ -264,10 +265,18 @@ pdfauthor={\@author}
 \renewcommand{\cftsubsecindent}{0.5cm}
 \renewcommand{\cftsubsubsecindent}{1.3cm}
 % Отступы для цифр
-\renewcommand{\cftpartnumwidth}{0cm}
-\renewcommand{\cftsecnumwidth}{0.5cm}
-\renewcommand{\cftsubsecnumwidth}{0.8cm}
-\renewcommand{\cftsubsubsecnumwidth}{1.1cm}
+\setlength{\cftpartnumwidth}{0cm}
+\setlength{\cftsecnumwidth}{0.5cm}
+\setlength{\cftsubsecnumwidth}{0.8cm}
+\setlength{\cftsubsubsecnumwidth}{1.1cm}
+\renewcommand{\numberline}[1]{%
+  % Измеряем ширину
+  \settowidth{\@tempdima}{#1}%
+  % Добавляем к измеренной ширине небольшое фиксированное пространство
+  \addtolength{\@tempdima}{0.25cm}%
+  % Создаем горизонтальный бокс с измененной шириной
+  \hb@xt@\@tempdima{\@cftbsnum #1\@cftasnum\hfil}%
+}
 % Фикс пробелов между главами
 \renewcommand{\cftbeforepartskip}{0.5em}
 \renewcommand{\cftbeforesecskip}{0.5em}
@@ -530,33 +539,58 @@ pdfauthor={\@author}
   \printbibliography[heading=none]%
 }
 
+% Включение отображения символа параграфа
+\newbool{showparagraphsynbool}
+\newcommand{\showP} {%
+  \global\booltrue{showparagraphsynbool}
+}
+
+% Определение маркеров для контроля пропусков между заголовками
+\newbool{sectionmarker}
+% Сброс маркера перед каждым новым абзацем
+\AtBeginDocument{%
+  \let\oldep\everypar  \newtoks\everypar  \oldep{\the\everypar\ifbool{showparagraphsynbool}{\P}{}\global\boolfalse{sectionmarker}}
+}
+
+% Переменная для подсчета динамеческого размера длинны подписей-цифр для заголовков
+\newlength{\sectionnumwidth}
+% Коробка для подсчета высоты подписей слева от цифры (используется для доп условий создания пробелов)
+\newsavebox{\sectionboxtext}
+
 % ГЛАВА
-\renewcommand\section{%
-  \@startsection {section}{1}{\parindent}%
-  {0pt}%
-  {12pt}%
-  {\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont}%
+\renewcommand\section[1]{%
+  \clearpage%
+  \refstepcounter{section}%
+  \protected@edef\@svsec{\@seccntformat{section}\relax}%
+  \addcontentsline{toc}{section}{\protect\numberline{\csname thesection\endcsname}#1}%
+  \settowidth{\sectionnumwidth}{\@svsec}%
+  \sbox{\sectionboxtext}{\parbox[t]{\linewidth-\sectionnumwidth-\parindent}{\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont#1}}%
+  {\fontsize{14}{14}\linespread{1}\setmainfont{Arial}\selectfont \@svsec \usebox\sectionboxtext}%
+  \par\nobreak\global\global\booltrue{sectionmarker}%
+  \ifdim\the\dimexpr\dp\sectionboxtext+\ht\sectionboxtext\relax > \dimexpr14pt\relax \addvspace{12pt}\else\addvspace{6pt}\fi%
 }
 
 % ПОДГЛАВА
 \renewcommand\subsection[1]{%
-  \@startsection {subsection}{2}{\parindent}%
-  {12pt}%
-  {0pt}%
-  {\fontsize{13}{13}\linespread{1}\setmainfont{Arial}\selectfont}%
-  {#1}%
-  {\noindent}%
-  % Если в названии много строк - отступ 9пт, если одна строка - отступ 6пт (СТО: п.4.5.6)
-  % про 6пт - СТО: 4.7.12
-  \vspace{\ifdim\dimexpr\fontcharht\font`\A * \numexpr \prevgraf + 1 \relax > \dimexpr 1\baselineskip 9pt\else 6pt\fi}%
+  \ifsectionmarker\else\addvspace{12pt}\fi%
+  \refstepcounter{subsection}%
+  \protected@edef\@svsec{\@seccntformat{subsection}\relax}%
+  \addcontentsline{toc}{subsection}{\protect\numberline{\csname thesubsection\endcsname}#1}%
+  \settowidth{\sectionnumwidth}{\@svsec}%
+  \sbox{\sectionboxtext}{\parbox[t]{\linewidth-\sectionnumwidth-\parindent}{\fontsize{13}{13}\linespread{1}\setmainfont{Arial}\selectfont#1}}%
+  {\fontsize{13}{13}\linespread{1}\setmainfont{Arial}\selectfont \@svsec \usebox\sectionboxtext}%
+  \par\nobreak%
+  \ifdim\the\dimexpr\dp\sectionboxtext+\ht\sectionboxtext\relax > \dimexpr13pt\relax \addvspace{12pt}\fi%
 }
 
 % ПОДПОДГЛАВА
 \renewcommand{\subsubsection}[1]{%
-  \@startsection {subsubsection}{3}{\parindent}%
-  {0pt}%
-  {0pt}%
-  {\fontsize{12}{12}\linespread{1}\setmainfont{Times New Roman}\selectfont\bfseries}%
-  {#1}%
-  {\noindent}%
+  \refstepcounter{subsubsection}%
+  \protected@edef\@svsec{\@seccntformat{subsubsection}\relax}%
+  \addcontentsline{toc}{subsubsection}{\protect\numberline{\csname thesubsubsection\endcsname}#1}%
+  \settowidth{\sectionnumwidth}{\@svsec}%
+  \sbox{\sectionboxtext}{\parbox[t]{\linewidth-\sectionnumwidth-\parindent}{\fontsize{12}{12}\linespread{1}\setmainfont{Times New Roman}\selectfont\bfseries#1}}%
+  {\fontsize{12}{12}\linespread{1}\setmainfont{Times New Roman}\selectfont\bfseries \@svsec \usebox\sectionboxtext}%
+  \par\nobreak%
+  \ifdim\the\dimexpr\dp\sectionboxtext+\ht\sectionboxtext\relax > \dimexpr12pt\relax \addvspace{12pt}\fi%
 }
